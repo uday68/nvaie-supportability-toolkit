@@ -1,0 +1,72 @@
+replicaCount: 2
+
+image:
+  repository: nvcr.io/nvidia/tritonserver
+  tag: "24.03-py3"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets:
+  - name: ngc-secret
+
+nameOverride: ""
+fullnameOverride: "triton-nvaie"
+
+serviceAccount:
+  create: true
+  name: ""
+
+podSecurityContext:
+  fsGroup: 1000
+  runAsNonRoot: true
+  runAsUser: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+
+service:
+  type: ClusterIP
+  httpPort: 8000
+  grpcPort: 8001
+  metricsPort: 8002
+
+resources:
+  limits:
+    cpu: "8"
+    memory: 16Gi
+    nvidia.com/gpu: 1
+  requests:
+    cpu: "4"
+    memory: 8Gi
+    nvidia.com/gpu: 1
+
+nodeSelector:
+  nvidia.com/gpu.present: "true"
+
+tolerations:
+  - key: "nvidia.com/gpu"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+modelRepositoryPath: "/models"
+
+probes:
+  liveness:
+    httpGet:
+      path: /v2/health/live
+      port: 8000
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readiness:
+    httpGet:
+      path: /v2/health/ready
+      port: 8000
+    initialDelaySeconds: 20
+    periodSeconds: 5
+
+serviceMonitor:
+  enabled: true
+  interval: 15s
+  path: /metrics

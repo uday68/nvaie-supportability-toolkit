@@ -1,0 +1,15 @@
+apiVersion: v2
+name: triton-nvaie-benchmark
+description: Production-grade Helm chart for NVIDIA Triton Inference Server on NVIDIA AI Enterprise (NVAIE) Kubernetes clusters
+type: application
+version: 1.0.0
+appVersion: "24.03-py3"
+keywords:
+  - nvidia
+  - triton
+  - nvaie
+  - inference
+  - gpu
+maintainers:
+  - name: V Uday
+    email: vuday8370@gmail.com
